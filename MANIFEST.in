@@ -1,0 +1,2 @@
+recursive-include src/uw_realtime_stt/print_document *
+recursive-include src/uw_realtime_stt/tests *
