@@ -15,9 +15,10 @@ class Create_Document:
         clear = os.system('cls' if os.name == 'nt' else 'clear')
         return clear
 
-    def document(self, words:str, cli_print:bool = True):
-        self.string_obj += f"[ {words}]"
+    def document(self, words:str, cli_print:bool = True, flushing:bool = False):
         self.clear_screen()
+        if flushing:
+            self.string_obj += f"[ {words}]"
 
         if cli_print:
-            print(self.string_obj)
+            print(words)

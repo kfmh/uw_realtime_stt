@@ -1,18 +1,4 @@
-import speech_recognition as sr 
-from transformers import WhisperProcessor, WhisperForConditionalGeneration
-from datasets import load_dataset
-import io
-import numpy as np
-import json 
-import requests
 
-
-with open('hf.json', 'r') as file:
-    key = json.load(file)
-
-
-headers = {"Authorization": f"Bearer {key['hf-write']}"}
-API_URL = "https://api-inference.huggingface.co/models/openai/whisper-large-v2"
 
 
 def stt(audio):
