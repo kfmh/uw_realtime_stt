@@ -1,5 +1,4 @@
 from multiprocessing import Process, Queue
-from buffer import AudioRecorder
 from print_document import Create_Document
 from time import sleep
 from stt import STT
@@ -7,6 +6,11 @@ from print_document import Create_Document
 import pyaudio
 from pydub import AudioSegment, silence
 from datetime import datetime
+
+
+import warnings
+warnings.filterwarnings('ignore')
+
 
 def export_audio(buffer, filename):
     """
@@ -19,7 +23,7 @@ def export_audio(buffer, filename):
 def process_analyze(name, queue):
     print(f"Start: {name}")
     stt = STT()
-    document = Create_Document()
+    printing = Create_Document()
     while True:
         data = queue.get()
         if data == "STOP":
@@ -27,13 +31,13 @@ def process_analyze(name, queue):
 
         # Process and analyze the audio data
         text = stt.analyse(data[0])
-        document.document(text, data[1])
+        printing.document(text, data[1])
 
 def process_rec(name, queue):
     print(f"Start: {name}")
     # buffer_duration = 3000
-    silence_thresh = -30
-    silence_duration = 2000
+    silence_thresh = -40
+    silence_duration = 1000
     export_path = './test_audio/'
     audio_format = pyaudio.paInt16
     channels = 1
@@ -68,7 +72,7 @@ def process_rec(name, queue):
         buffer += chunk
         accumulated_duration += len(chunk)
         data = buffer.raw_data
-        
+
         if len(buffer) >= silence_duration and silence.detect_silence(buffer[-silence_duration:], min_silence_len=silence_duration, silence_thresh=silence_thresh):
             print("Silence detected, exporting and flushing buffer")
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')

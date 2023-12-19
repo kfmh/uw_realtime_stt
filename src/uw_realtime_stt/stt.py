@@ -8,10 +8,11 @@ import torch
 import numpy as np
 from time import sleep
 from runtime_test import LogExecutionTime
-import json 
-import io 
-import wave
 
+import re
+import warnings
+
+warnings.filterwarnings('ignore')
 
 class STT:
     def __init__(self):
@@ -29,6 +30,7 @@ class STT:
 
     def analyse(self, audio_segment):
 
+
         self.model.to(self.mps_device)
 
         processor = AutoProcessor.from_pretrained(self.model_id)
@@ -44,4 +46,5 @@ class STT:
             device = self.mps_device,
         )
         result = pipe(audio_np_array)
+
         return result["text"]
