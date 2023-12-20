@@ -3,13 +3,9 @@
 # 
 # ============================================================================
 
-from runtime_test import LogExecutionTime
+from .runtime_test import LogExecutionTime
 import os
 
-import re
-import warnings
-
-warnings.filterwarnings('ignore')
 
 class Create_Document:
     def __init__(self, title="stt_doc"):

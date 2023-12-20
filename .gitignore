@@ -151,3 +151,7 @@ cython_debug/
 
 # Jupyter notebooks
 *.ipynb
+
+# Directorys
+/audio_samples
+/test_audio

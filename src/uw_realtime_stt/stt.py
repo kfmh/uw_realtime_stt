@@ -3,16 +3,15 @@
 # 
 # ============================================================================
 
+from .runtime_test import LogExecutionTime
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 import torch
 import numpy as np
 from time import sleep
-from runtime_test import LogExecutionTime
+import logging
 
-import re
-import warnings
-
-warnings.filterwarnings('ignore')
+# Set logging level to ERROR to suppress warnings
+logging.getLogger("transformers").setLevel(logging.ERROR)
 
 class STT:
     def __init__(self):
@@ -30,12 +29,12 @@ class STT:
 
     def analyse(self, audio_segment):
 
-
         self.model.to(self.mps_device)
 
         processor = AutoProcessor.from_pretrained(self.model_id)
         audio_np_array = np.frombuffer(audio_segment, dtype=np.int16)
         
+
         pipe = pipeline(
             "automatic-speech-recognition",
             model = self.model,
@@ -45,6 +44,7 @@ class STT:
             torch_dtype=self.torch_dtype,
             device = self.mps_device,
         )
+
         result = pipe(audio_np_array)
 
         return result["text"]

@@ -1,15 +1,10 @@
+from .print_document import Create_Document
+from .stt import STT
 from multiprocessing import Process, Queue
-from print_document import Create_Document
 from time import sleep
-from stt import STT
-from print_document import Create_Document
 import pyaudio
 from pydub import AudioSegment, silence
 from datetime import datetime
-
-
-import warnings
-warnings.filterwarnings('ignore')
 
 
 def export_audio(buffer, filename):
@@ -31,19 +26,19 @@ def process_analyze(name, queue):
 
         # Process and analyze the audio data
         text = stt.analyse(data[0])
+
         printing.document(text, data[1])
 
 def process_rec(name, queue):
     print(f"Start: {name}")
-    # buffer_duration = 3000
-    silence_thresh = -40
+    silence_thresh = -30
     silence_duration = 1000
     export_path = './test_audio/'
     audio_format = pyaudio.paInt16
     channels = 1
     rate = 22050
-    chunk_size = 1024
-    stt = STT()
+    chunk_size = 2048
+    record_duration = 0.5
     p = pyaudio.PyAudio()
     stream = p.open(format=audio_format, 
                     channels=channels, 
@@ -57,7 +52,7 @@ def process_rec(name, queue):
         # data =  recorder.record()
         flushing = False
         frames = []
-        for _ in range(0, int(rate / chunk_size * 2)): # Record for 1 second
+        for _ in range(0, int(rate / chunk_size * record_duration)): # Record for 1 second
             try:
                 data = stream.read(chunk_size)
                 frames.append(data)
@@ -74,15 +69,15 @@ def process_rec(name, queue):
         data = buffer.raw_data
 
         if len(buffer) >= silence_duration and silence.detect_silence(buffer[-silence_duration:], min_silence_len=silence_duration, silence_thresh=silence_thresh):
-            print("Silence detected, exporting and flushing buffer")
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            export_audio(buffer, f'{export_path}r_{timestamp}.wav')
+            # print("Silence detected, exporting and flushing buffer")
+            # timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            # export_audio(buffer, f'{export_path}r_{timestamp}.wav')
             buffer = AudioSegment.silent(duration=0)
             flushing = True
 
         queue.put((data, flushing))  # Put recorded data into the queue
-
-if __name__ == "__main__":
+    
+def main():
     print("starting")
     
     queue = Queue()
@@ -106,3 +101,6 @@ if __name__ == "__main__":
         p1.join()
         p2.join()
         print("Processes terminated successfully.")
+
+if __name__ == "__main__":
+    main()
